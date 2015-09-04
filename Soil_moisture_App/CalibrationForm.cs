@@ -78,5 +78,10 @@ namespace Soil_moisture_App
             continueBTN.Enabled = true;
             continueBTN.Refresh();
         }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -57,7 +57,9 @@ namespace Soil_moisture_App
             CMD_DRY,
             CMD_WET,
             CMD_FIN,
-            CMD_TEST
+            CMD_TEST,
+            CMD_VERS,
+            CMD_ERROR
         }
 
         public Form1()
