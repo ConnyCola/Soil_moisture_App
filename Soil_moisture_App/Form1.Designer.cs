@@ -36,6 +36,7 @@
             this.txtReceiveBox = new System.Windows.Forms.TextBox();
             this.txtDataSendBox = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.maxMoisLab = new System.Windows.Forms.Label();
@@ -43,6 +44,8 @@
             this.moisVoltLab = new System.Windows.Forms.Label();
             this.moisLab = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -87,7 +90,7 @@
             // 
             // sendBTN
             // 
-            this.sendBTN.Location = new System.Drawing.Point(757, 185);
+            this.sendBTN.Location = new System.Drawing.Point(817, 185);
             this.sendBTN.Name = "sendBTN";
             this.sendBTN.Size = new System.Drawing.Size(193, 61);
             this.sendBTN.TabIndex = 4;
@@ -103,19 +106,22 @@
             this.txtReceiveBox.Location = new System.Drawing.Point(336, 13);
             this.txtReceiveBox.Multiline = true;
             this.txtReceiveBox.Name = "txtReceiveBox";
-            this.txtReceiveBox.Size = new System.Drawing.Size(614, 166);
+            this.txtReceiveBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtReceiveBox.Size = new System.Drawing.Size(674, 166);
             this.txtReceiveBox.TabIndex = 5;
             // 
             // txtDataSendBox
             // 
             this.txtDataSendBox.Location = new System.Drawing.Point(336, 185);
             this.txtDataSendBox.Name = "txtDataSendBox";
-            this.txtDataSendBox.Size = new System.Drawing.Size(415, 31);
+            this.txtDataSendBox.Size = new System.Drawing.Size(475, 31);
             this.txtDataSendBox.TabIndex = 6;
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.maxMoisLab);
@@ -131,6 +137,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Values";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(12, 172);
+            this.label3.Name = "label3";
+            this.label3.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label3.Size = new System.Drawing.Size(60, 35);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "min:";
             // 
             // label2
             // 
@@ -156,21 +173,21 @@
             // 
             this.maxMoisLab.AutoSize = true;
             this.maxMoisLab.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.maxMoisLab.Location = new System.Drawing.Point(138, 172);
+            this.maxMoisLab.Location = new System.Drawing.Point(193, 172);
             this.maxMoisLab.Name = "maxMoisLab";
-            this.maxMoisLab.Size = new System.Drawing.Size(72, 35);
+            this.maxMoisLab.Size = new System.Drawing.Size(53, 35);
             this.maxMoisLab.TabIndex = 0;
-            this.maxMoisLab.Text = "max: ";
+            this.maxMoisLab.Text = "00 ";
             // 
             // minMoisLab
             // 
             this.minMoisLab.AutoSize = true;
             this.minMoisLab.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.minMoisLab.Location = new System.Drawing.Point(11, 172);
+            this.minMoisLab.Location = new System.Drawing.Point(75, 172);
             this.minMoisLab.Name = "minMoisLab";
-            this.minMoisLab.Size = new System.Drawing.Size(68, 35);
+            this.minMoisLab.Size = new System.Drawing.Size(45, 35);
             this.minMoisLab.TabIndex = 0;
-            this.minMoisLab.Text = "min: ";
+            this.minMoisLab.Text = "00";
             // 
             // moisVoltLab
             // 
@@ -196,7 +213,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(666, 325);
+            this.button1.Location = new System.Drawing.Point(724, 325);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(286, 133);
             this.button1.TabIndex = 8;
@@ -204,11 +221,32 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(126, 172);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(64, 35);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "max:";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(501, 325);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(217, 133);
+            this.button2.TabIndex = 9;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(964, 480);
+            this.ClientSize = new System.Drawing.Size(1022, 480);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtDataSendBox);
@@ -245,6 +283,9 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button2;
     }
 }
 

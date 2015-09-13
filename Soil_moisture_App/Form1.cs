@@ -1,4 +1,4 @@
-﻿#define DEMO
+﻿//#define DEMO
 
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,8 @@ namespace Soil_moisture_App
 {
     public struct cmdStruct
     {
-        public byte cmd, val1, val2;
+        public byte cmd;
+        public int val1, val2;
     }
 
     public partial class Form1 : Form
@@ -35,8 +36,8 @@ namespace Soil_moisture_App
         public struct cmdStruct
         {
             public byte cmd;
-            public byte val1;
-            public byte val2;
+            public int val1;
+            public int val2;
         } ;
 
         enum FormComModes : byte
@@ -51,16 +52,18 @@ namespace Soil_moisture_App
         enum CMDs : byte
         {   CMD_MOIS = (byte)'A',
             CMD_VOLT = (byte)'B',
-            CMD_MIN,
-            CMD_MAX,
-            CMD_CALI,
-            CMD_DRY,
-            CMD_WET,
-            CMD_FIN,
-            CMD_TEST,
-            CMD_VERS,
-            CMD_ERROR
+            CMD_MIN = (byte)'C',
+            CMD_MAX = (byte)'D',
+            CMD_CALI = (byte)'E',
+            CMD_DRY = (byte)'F',
+            CMD_WET = (byte)'G',
+            CMD_FIN = (byte)'H',
+            CMD_TEST = (byte)'I',
+            CMD_VERS = (byte)'J',
+            CMD_ERROR = (byte)'Z'
         }
+
+        public Thread bgThread = null;
 
         public Form1()
         {
@@ -71,17 +74,20 @@ namespace Soil_moisture_App
                 comPort_comboBox.Items.Add(s);
 
             //debug code
-            if (comPort_comboBox.Items.Contains("COM2"))
-                comPort_comboBox.Text = "COM2";
+            if (comPort_comboBox.Items.Contains("COM15"))
+                comPort_comboBox.Text = "COM15";
 
             moisLab.Text = "55%";
             moisVoltLab.Text = "2,1V";
-            minMoisLab.Text = "min: 0,82";
-            maxMoisLab.Text = "max: 2,30";
 
             mainThread = SynchronizationContext.Current;
             if (mainThread == null) mainThread = new SynchronizationContext();
 
+        }
+
+        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            disconBTN_Click(null, null);
         }
 
 
@@ -101,11 +107,11 @@ namespace Soil_moisture_App
                     sport.DataReceived += new SerialDataReceivedEventHandler(sport_DataReceived);
 
                     // Create the thread object. This does not start the thread.
-                    Thread t = new Thread(new ThreadStart(BackgroundThread));
-                    t.IsBackground = true;
-                    t.Start();
-                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Background Thread started\n");
-                    _backgroundPause = true;
+                    bgThread = new Thread(new ThreadStart(BackgroundThread));
+
+                    bgThread.IsBackground = true;
+                    bgThread.Start();
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Background Thread started and Paused\n");
                 }
                 catch (Exception ex) { MessageBox.Show(ex.ToString(), "Error"); }}
 
@@ -118,11 +124,14 @@ namespace Soil_moisture_App
             b[0] = cmd;
             b[1] = val1;
             b[2] = val2;
-            sport.Write(b, 0, 3);
+            //sport.Write(b, 0, 3);
+
+            //send only 1 char!
+            sport.Write(b, 0, 1);
 
             mainThread.Send((object state) =>
             {
-                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "cmd: " + cmd.ToString() + "  val1: " + val1.ToString() + "  val2: " + val2.ToString() + "\n");
+                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "cmd: " + Convert.ToChar(cmd) + "  val1: " + val1.ToString() + "  val2: " + val2.ToString() + "\n");
             }, null);
         }
 
@@ -139,7 +148,7 @@ namespace Soil_moisture_App
             if (m == (byte)FormComModes.CaliStart)
             {
                 send_command((byte)CMDs.CMD_CALI, 1, 0);
-                Thread.Sleep(2000);
+                Thread.Sleep(200);
                 #if DEMO
                 CaliForm.changeContext((byte)FormComModes.CaliDry);
                 #endif
@@ -147,7 +156,7 @@ namespace Soil_moisture_App
             else if (m == (byte)FormComModes.CaliDry)
             {
                 send_command((byte)CMDs.CMD_DRY, 1, 0);
-                Thread.Sleep(2000);
+                Thread.Sleep(200);
                 #if DEMO
                 CaliForm.changeContext((byte)FormComModes.CaliWet);
                 #endif
@@ -155,27 +164,29 @@ namespace Soil_moisture_App
             else if (m == (byte)FormComModes.CaliWet)
             {
                 send_command((byte)CMDs.CMD_WET, 1, 0);
-                Thread.Sleep(2000);
-                bool result = false;
-                if (result)
-                {
-                    #if DEMO
-                    CaliForm.changeContext((byte)FormComModes.CaliFin);
-                    #endif
-                    _backgroundPause = false;
-                }
-                else
-                {
-                    #if DEMO
-                    CaliForm.changeContext((byte)FormComModes.CaliError);
-                    #endif
-                    _backgroundPause = false;
-                }
-
+                Thread.Sleep(200);
             }
             else if ((m == (byte)FormComModes.CaliFin) || (m == (byte)FormComModes.CaliError))
+            {
+                send_command((byte)CMDs.CMD_FIN, 1, 0);
+                Thread.Sleep(1000);
                 CaliForm.Close();
+                _backgroundPause = false;
 
+            }
+
+        }
+
+        private void sport_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            String str = sport.ReadLine();
+
+            cmdStruct cmdBack = decodeReceivedCmd(str);
+            mainThread.Send((object state) =>
+            {
+                processReceivedCmd(cmdBack);
+                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Received: cmd: " + Convert.ToChar(cmdBack.cmd) + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
+            }, null);
         }
 
         private cmdStruct decodeReceivedCmd(string str)
@@ -184,12 +195,16 @@ namespace Soil_moisture_App
             // |  CMD  |  val1 |  val2 |  \n  |
             // |  byte |  byte |  byte | byte |
             // 
+            cmdStruct cmdBack = new cmdStruct();
+
             byte[] bytes = new byte[str.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            cmdStruct cmdBack = new cmdStruct();
+
             cmdBack.cmd = bytes[0];
-            cmdBack.val1 = bytes[1];
-            cmdBack.val2 = bytes[2];
+            if (str.Length >= 6)
+            cmdBack.val1 = Int16.Parse( str.Substring(1, 4));
+            if(str.Length >=10)
+                cmdBack.val2 = Int16.Parse( str.Substring(6, 4));
             return cmdBack;
         }
 
@@ -198,66 +213,60 @@ namespace Soil_moisture_App
             switch (c.cmd)
             {
                 case (byte)CMDs.CMD_MOIS:
-                    moisLab.Text = Convert.ToString((c.val1 << 8) + c.val2);
-                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + " received MOIS" + "\n");
-
+                    moisLab.Text = c.val1.ToString() + "%";
                     break;
                 case (byte)CMDs.CMD_VOLT:
-                    moisVoltLab.Text = Convert.ToString((int)((byte)((c.val1 << 8) + c.val2)) / 100);
+                    moisVoltLab.Text = c.val1.ToString();
                     break;
                 case (byte)CMDs.CMD_MIN:
-                    minMoisLab.Text = Convert.ToString((int)((byte)((c.val1 << 8) + c.val2))/100);
+                    minMoisLab.Text = c.val1.ToString();
                     break;
                 case (byte)CMDs.CMD_MAX:
-                    maxMoisLab.Text = Convert.ToString((int)((byte)((c.val1 << 8) + c.val2)) / 100);
+                    maxMoisLab.Text = c.val1.ToString();
                     break;
                 case (byte)CMDs.CMD_CALI:
-                    if((byte)c.val1 == 1)
+                    if(c.val1 == 1)
                         CaliForm.changeContext((byte)FormComModes.CaliDry);
                     else
                         CaliForm.changeContext((byte)FormComModes.CaliError);
                     break;
                 case (byte)CMDs.CMD_DRY:
-                    if ((byte)c.val1 == 1)
+                    if ((c.val1 >= 0) & (c.val1 <= 1024))
                         CaliForm.changeContext((byte)FormComModes.CaliWet);
                     else
                         CaliForm.changeContext((byte)FormComModes.CaliError);
                     break;
                 case (byte)CMDs.CMD_WET:
-                    if ((byte)c.val1 == 1)
+                    if ((c.val1 >= 0) & (c.val1 <= 1024))
                         CaliForm.changeContext((byte)FormComModes.CaliFin);
                     else
                         CaliForm.changeContext((byte)FormComModes.CaliError);
                     break;
                 case (byte)CMDs.CMD_TEST:
-                    moisLab.Text = Convert.ToString((int)((byte)((c.val1 << 8) + c.val2)) / 100);
-                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + " received TEST" + "\n");
+                    moisLab.Text = c.val1.ToString();
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "received TEST" + "\n");
                     _backgroundPause = false;
                     break;
                     /*
                 case (byte)CMDs.CMD_FIN:
                     if ((byte)c.val1 == 1)
-                        CaliForm.changePic((byte)FormComModes.CaliFin);
+                        CaliForm.changeContext((byte)FormComModes.CaliFin);
                     else
-                        CaliForm.changePic((byte)FormComModes.CaliError);
+                        CaliForm.changeContext((byte)FormComModes.CaliError);
                     break;
-                     * */
+                     */
+                case(byte)CMDs.CMD_VERS:
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "SoilMoisture Sensor" + "\n");
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Software VERSION : " + c.val1.ToString() + "\n");
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "         BUILT   : " + c.val2.ToString() + "\n");
+
+                    break;
                 default:
                     break;
             }
         }
 
-        private void sport_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            String str = sport.ReadExisting();
 
-            cmdStruct cmdBack = decodeReceivedCmd(str);
-            mainThread.Send((object state) =>
-            {
-                processReceivedCmd(cmdBack);
-                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Received: cmd: " + cmdBack.cmd.ToString() + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
-            }, null);
-        }
 
 
         private void conBTN_Click(object sender, EventArgs e)
@@ -269,14 +278,19 @@ namespace Soil_moisture_App
             StopBits stopbits = System.IO.Ports.StopBits.One;
             
             serialport_connect(port, baudrate, parity, databits, stopbits);
-            byte[] c = new byte[4];
-            c[0] = (byte)'t';
-            c[1] = (byte)'e';
-            c[2] = (byte)'s';
-            c[3] = (byte)'t';
 
-            sport.Write(c,0,c.Count());
-            //send_command((byte)'A', (byte)'A', (byte)'a');
+            send_command((byte)CMDs.CMD_VERS, 0, 0);
+            Thread.Sleep(300);
+            send_command((byte)CMDs.CMD_MIN, 0, 0);
+            Thread.Sleep(300);
+
+            send_command((byte)CMDs.CMD_MAX, 0, 0);
+            Thread.Sleep(300);
+
+            //Thread.Sleep(1000);
+            //_backgroundPause = false;
+
+
         }
 
         private void sendBTN_Click(object sender, EventArgs e)
@@ -288,6 +302,9 @@ namespace Soil_moisture_App
 
         private void disconBTN_Click(object sender, EventArgs e)
         {
+            _backgroundPause = true;
+            bgThread.Abort();
+
             if (sport.IsOpen)
             {
                 sport.Close();
@@ -308,9 +325,8 @@ namespace Soil_moisture_App
 
         private void button1_Click(object sender, EventArgs e)
         {
-            byte[] a = new byte[1];
-            a[0] = 40;
-            //button1.Text = a;
+            //_backgroundPause = true;
+            send_command((byte)'I', 0, 0);
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -325,17 +341,26 @@ namespace Soil_moisture_App
             {
                 while (!_backgroundPause)
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(500);
                     mainThread.Send((object state) =>
                     {
                         txtReceiveBox.AppendText("[" + get_dtn() + "] " + "background thread: working... " + runs++ + "\n");
                     }, null); 
                     send_command((byte)CMDs.CMD_MOIS, 1, 0);
-                    _backgroundPause = true;
+                    //_backgroundPause = true;
                 }
                 Console.WriteLine("worker thread: terminating gracefully.");
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (_backgroundPause == true)
+                _backgroundPause = false;
+            else
+                _backgroundPause = true;
+        }
+
     }
 }
 
