@@ -77,8 +77,8 @@ namespace Soil_moisture_App
             if (comPort_comboBox.Items.Contains("COM15"))
                 comPort_comboBox.Text = "COM15";
 
-            moisLab.Text = "55%";
-            moisVoltLab.Text = "2,1V";
+            moisLab.Text = "--%";
+            moisVoltLab.Text = "--V";
 
             mainThread = SynchronizationContext.Current;
             if (mainThread == null) mainThread = new SynchronizationContext();
@@ -170,6 +170,13 @@ namespace Soil_moisture_App
             {
                 send_command((byte)CMDs.CMD_FIN, 1, 0);
                 Thread.Sleep(1000);
+
+                send_command((byte)CMDs.CMD_MIN, 0, 0);
+                Thread.Sleep(300);
+
+                send_command((byte)CMDs.CMD_MAX, 0, 0);
+                Thread.Sleep(300);
+
                 CaliForm.Close();
                 _backgroundPause = false;
 
@@ -283,10 +290,11 @@ namespace Soil_moisture_App
             Thread.Sleep(300);
             send_command((byte)CMDs.CMD_MIN, 0, 0);
             Thread.Sleep(300);
-
             send_command((byte)CMDs.CMD_MAX, 0, 0);
             Thread.Sleep(300);
 
+            send_command((byte)CMDs.CMD_MOIS, 0, 0);
+            Thread.Sleep(300);
             //Thread.Sleep(1000);
             //_backgroundPause = false;
 
