@@ -13,6 +13,21 @@ using System.IO.Ports;
 
 namespace Soil_moisture_App
 {
+    public enum CMDs : byte
+    {
+        CMD_MOIS = (byte)'A',
+        CMD_VOLT = (byte)'B',
+        CMD_MIN = (byte)'C',
+        CMD_MAX = (byte)'D',
+        CMD_CALI = (byte)'E',
+        CMD_DRY = (byte)'F',
+        CMD_WET = (byte)'G',
+        CMD_FIN = (byte)'H',
+        CMD_TEST = (byte)'I',
+        CMD_VERS = (byte)'J',
+        CMD_ERROR = (byte)'Z'
+    }
+
     public struct cmdStruct
     {
         public byte cmd;
@@ -49,19 +64,7 @@ namespace Soil_moisture_App
             CaliEnd
         };
 
-        enum CMDs : byte
-        {   CMD_MOIS = (byte)'A',
-            CMD_VOLT = (byte)'B',
-            CMD_MIN = (byte)'C',
-            CMD_MAX = (byte)'D',
-            CMD_CALI = (byte)'E',
-            CMD_DRY = (byte)'F',
-            CMD_WET = (byte)'G',
-            CMD_FIN = (byte)'H',
-            CMD_TEST = (byte)'I',
-            CMD_VERS = (byte)'J',
-            CMD_ERROR = (byte)'Z'
-        }
+
 
         public Thread bgThread = null;
 
@@ -367,6 +370,16 @@ namespace Soil_moisture_App
                 _backgroundPause = false;
             else
                 _backgroundPause = true;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            send_command((byte)CMDs.CMD_DRY, 0, 0);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            send_command((byte)CMDs.CMD_WET, 0, 0);
         }
 
     }
