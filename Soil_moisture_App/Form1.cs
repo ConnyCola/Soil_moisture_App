@@ -220,10 +220,13 @@ namespace Soil_moisture_App
 
         private void processReceivedCmd(cmdStruct c)
         {
+            if (txtReceiveBox.TextLength >= 20000)
+                txtReceiveBox.Text =  txtReceiveBox.Text.Substring(17000, 3000);
             switch (c.cmd)
             {
                 case (byte)CMDs.CMD_MOIS:
                     moisLab.Text = c.val1.ToString() + "%";
+                    progressBar1.Value = c.val1;
                     break;
                 case (byte)CMDs.CMD_VOLT:
                     moisVoltLab.Text = c.val1.ToString();
@@ -299,7 +302,7 @@ namespace Soil_moisture_App
             send_command((byte)CMDs.CMD_MOIS, 0, 0);
             Thread.Sleep(300);
             //Thread.Sleep(1000);
-            //_backgroundPause = false;
+            _backgroundPause = false;
 
 
         }
@@ -315,6 +318,8 @@ namespace Soil_moisture_App
         {
             _backgroundPause = true;
             bgThread.Abort();
+
+            Thread.Sleep(500);
 
             if (sport.IsOpen)
             {
@@ -337,7 +342,7 @@ namespace Soil_moisture_App
         private void button1_Click(object sender, EventArgs e)
         {
             //_backgroundPause = true;
-            send_command((byte)'I', 0, 0);
+            send_command((byte)CMDs.CMD_TEST, 0, 0);
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -352,7 +357,7 @@ namespace Soil_moisture_App
             {
                 while (!_backgroundPause)
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(250);
                     mainThread.Send((object state) =>
                     {
                         txtReceiveBox.AppendText("[" + get_dtn() + "] " + "background thread: working... " + runs++ + "\n");
@@ -380,6 +385,16 @@ namespace Soil_moisture_App
         private void button4_Click(object sender, EventArgs e)
         {
             send_command((byte)CMDs.CMD_WET, 0, 0);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            send_command((byte)CMDs.CMD_MIN, 0, 0);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            send_command((byte)CMDs.CMD_MAX, 0, 0);
         }
 
     }
