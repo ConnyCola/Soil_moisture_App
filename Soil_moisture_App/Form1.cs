@@ -64,7 +64,7 @@ namespace Soil_moisture_App
             CaliEnd
         };
 
-
+        int initFlag = 0;
 
         public Thread bgThread = null;
 
@@ -178,12 +178,19 @@ namespace Soil_moisture_App
                 Thread.Sleep(300);
 
                 send_command((byte)CMDs.CMD_MAX, 0, 0);
-                Thread.Sleep(300);
 
+                Thread.Sleep(300);
                 CaliForm.Close();
+
+                
                 _backgroundPause = false;
 
             }
+            else if (m == (byte)FormComModes.CaliEnd)
+            {
+                _backgroundPause = false;
+            }
+
 
         }
 
@@ -244,13 +251,13 @@ namespace Soil_moisture_App
                         CaliForm.changeContext((byte)FormComModes.CaliError);
                     break;
                 case (byte)CMDs.CMD_DRY:
-                    if ((c.val1 >= 0) & (c.val1 <= 1024))
+                    if ((c.val1 >= 0) && (c.val1 <= 1024))
                         CaliForm.changeContext((byte)FormComModes.CaliWet);
                     else
                         CaliForm.changeContext((byte)FormComModes.CaliError);
                     break;
                 case (byte)CMDs.CMD_WET:
-                    if ((c.val1 >= 0) & (c.val1 <= 1024))
+                    if ((c.val1 >= 0) && (c.val1 <= 1024))
                         CaliForm.changeContext((byte)FormComModes.CaliFin);
                     else
                         CaliForm.changeContext((byte)FormComModes.CaliError);
@@ -269,6 +276,7 @@ namespace Soil_moisture_App
                     break;
                      */
                 case(byte)CMDs.CMD_VERS:
+                    initFlag = 1;
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "SoilMoisture Sensor" + "\n");
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Software VERSION : " + c.val1.ToString() + "\n");
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "         BUILT   : " + c.val2.ToString() + "\n");
@@ -292,7 +300,15 @@ namespace Soil_moisture_App
             
             serialport_connect(port, baudrate, parity, databits, stopbits);
 
+
+
+            //check the Version to check for right Com Port
+            int tout = 30;
+            initFlag = 0;
             send_command((byte)CMDs.CMD_VERS, 0, 0);
+
+
+
             Thread.Sleep(300);
             send_command((byte)CMDs.CMD_MIN, 0, 0);
             Thread.Sleep(300);
@@ -302,6 +318,19 @@ namespace Soil_moisture_App
             send_command((byte)CMDs.CMD_MOIS, 0, 0);
             Thread.Sleep(300);
             //Thread.Sleep(1000);
+
+            while (initFlag != 1)
+            {
+                Thread.Sleep(100);
+                tout--;
+                if (tout == 0)
+                {
+                    disconBTN_Click(null, null);
+                    MessageBox.Show("Wrong Com Port!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             _backgroundPause = false;
 
 
@@ -396,6 +425,37 @@ namespace Soil_moisture_App
         {
             send_command((byte)CMDs.CMD_MAX, 0, 0);
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked == true)
+                Form.ActiveForm.Width = 525;
+            else
+                Form.ActiveForm.Width = 161;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            Form frm = sender as Form;
+            frm.Width = 161;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosedEventHandler e)
+        {
+        }
+
+        private void comPort_comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comPort_comboBox_DropDown(object sender, EventArgs e)
+        {
+            comPort_comboBox.Items.Clear();
+            foreach (String s in System.IO.Ports.SerialPort.GetPortNames())
+                comPort_comboBox.Items.Add(s);
+        }
+
 
     }
 }

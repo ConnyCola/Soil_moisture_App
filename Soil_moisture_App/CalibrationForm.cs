@@ -83,5 +83,16 @@ namespace Soil_moisture_App
         {
 
         }
+
+        private void CalibrationForm_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void CalibrationForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            mainForm.CaliFormCallback((byte)FormComModes.CaliEnd);
+        }
+
+
     }
 }

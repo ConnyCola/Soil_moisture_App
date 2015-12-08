@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.conBTN = new System.Windows.Forms.Button();
             this.disconBTN = new System.Windows.Forms.Button();
@@ -37,6 +38,7 @@
             this.txtReceiveBox = new System.Windows.Forms.TextBox();
             this.txtDataSendBox = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -51,7 +53,10 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,10 +94,12 @@
             // comPort_comboBox
             // 
             this.comPort_comboBox.FormattingEnabled = true;
-            this.comPort_comboBox.Location = new System.Drawing.Point(12, 13);
+            this.comPort_comboBox.Location = new System.Drawing.Point(12, 12);
             this.comPort_comboBox.Name = "comPort_comboBox";
             this.comPort_comboBox.Size = new System.Drawing.Size(277, 33);
             this.comPort_comboBox.TabIndex = 3;
+            this.comPort_comboBox.DropDown += new System.EventHandler(this.comPort_comboBox_DropDown);
+            this.comPort_comboBox.SelectedIndexChanged += new System.EventHandler(this.comPort_comboBox_SelectedIndexChanged);
             // 
             // sendBTN
             // 
@@ -137,13 +144,23 @@
             this.groupBox1.Controls.Add(this.moisLab);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.916231F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(12, 251);
+            this.groupBox1.Location = new System.Drawing.Point(12, 278);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(277, 213);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Values";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.progressBar1.Location = new System.Drawing.Point(0, 201);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.RightToLeftLayout = true;
+            this.progressBar1.Size = new System.Drawing.Size(277, 16);
+            this.progressBar1.Step = 1;
+            this.progressBar1.TabIndex = 11;
             // 
             // label4
             // 
@@ -250,7 +267,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(396, 326);
+            this.button3.Location = new System.Drawing.Point(396, 344);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(93, 43);
             this.button3.TabIndex = 10;
@@ -260,7 +277,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(495, 326);
+            this.button4.Location = new System.Drawing.Point(495, 344);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(93, 43);
             this.button4.TabIndex = 10;
@@ -270,7 +287,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(396, 375);
+            this.button5.Location = new System.Drawing.Point(396, 415);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(93, 43);
             this.button5.TabIndex = 1;
@@ -280,7 +297,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(495, 375);
+            this.button6.Location = new System.Drawing.Point(495, 415);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(93, 43);
             this.button6.TabIndex = 1;
@@ -288,21 +305,43 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
-            // progressBar1
+            // checkBox1
             // 
-            this.progressBar1.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.progressBar1.Location = new System.Drawing.Point(0, 201);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.RightToLeftLayout = true;
-            this.progressBar1.Size = new System.Drawing.Size(277, 16);
-            this.progressBar1.Step = 1;
-            this.progressBar1.TabIndex = 11;
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(12, 227);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(159, 30);
+            this.checkBox1.TabIndex = 12;
+            this.checkBox1.Text = "expert mode";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(396, 318);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(41, 26);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "set";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(396, 386);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(42, 26);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "get";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1023, 480);
+            this.ClientSize = new System.Drawing.Size(1024, 503);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
@@ -321,6 +360,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Soil moisture App";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -353,6 +393,10 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
