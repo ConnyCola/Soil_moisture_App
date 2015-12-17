@@ -111,6 +111,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="Resources\wifi3.png" />
+    <None Include="Resources\wifi_2.png" />
+    <None Include="Resources\wifi_1.png" />
+    <None Include="Resources\wifi_0.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SensorGlas.jpg" />

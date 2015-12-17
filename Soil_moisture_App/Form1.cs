@@ -25,6 +25,7 @@ namespace Soil_moisture_App
         CMD_FIN = (byte)'H',
         CMD_TEST = (byte)'I',
         CMD_VERS = (byte)'J',
+        CMD_RSSI = (byte)'K',
         CMD_ERROR = (byte)'Z'
     }
 
@@ -77,8 +78,8 @@ namespace Soil_moisture_App
                 comPort_comboBox.Items.Add(s);
 
             //debug code
-            if (comPort_comboBox.Items.Contains("COM15"))
-                comPort_comboBox.Text = "COM15";
+            if (comPort_comboBox.Items.Contains("COM12"))
+                comPort_comboBox.Text = "COM12";
 
             moisLab.Text = "--%";
             moisVoltLab.Text = "--V";
@@ -281,6 +282,26 @@ namespace Soil_moisture_App
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Software VERSION : " + c.val1.ToString() + "\n");
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "         BUILT   : " + c.val2.ToString() + "\n");
 
+                    if (c.val2 >= 1000)
+                    {  //Veriosn with Wireless if built no. > 1000
+                        pictureBox1.Visible = true;
+                    }
+                    pictureBox1.Visible = true;
+
+
+                    break;
+                case(byte)CMDs.CMD_RSSI:
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "received RSSI :" + c.val1.ToString() +"\n");
+                    moisVoltLab.Text = c.val1.ToString();
+                    moisVoltLab.Show();
+                    if (c.val1 <= 94)
+                        pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi3;
+                    else if(c.val1 <= 105) 
+                        pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_2;
+                    else if(c.val1 <= 110)
+                        pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_1;
+                    else
+                        pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_0;
                     break;
                 default:
                     break;
@@ -303,7 +324,7 @@ namespace Soil_moisture_App
 
 
             //check the Version to check for right Com Port
-            int tout = 30;
+            int tout = 20;
             initFlag = 0;
             send_command((byte)CMDs.CMD_VERS, 0, 0);
 
@@ -390,8 +411,11 @@ namespace Soil_moisture_App
                     mainThread.Send((object state) =>
                     {
                         txtReceiveBox.AppendText("[" + get_dtn() + "] " + "background thread: working... " + runs++ + "\n");
-                    }, null); 
-                    send_command((byte)CMDs.CMD_MOIS, 1, 0);
+                    }, null);
+                    if(runs%5 == 0)
+                        send_command((byte)CMDs.CMD_RSSI, 1, 0);
+                    else
+                        send_command((byte)CMDs.CMD_MOIS, 1, 0);
                     //_backgroundPause = true;
                 }
                 Console.WriteLine("worker thread: terminating gracefully.");
@@ -454,6 +478,11 @@ namespace Soil_moisture_App
             comPort_comboBox.Items.Clear();
             foreach (String s in System.IO.Ports.SerialPort.GetPortNames())
                 comPort_comboBox.Items.Add(s);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
 
 
