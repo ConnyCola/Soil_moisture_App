@@ -41,12 +41,12 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.maxMoisLab = new System.Windows.Forms.Label();
             this.minMoisLab = new System.Windows.Forms.Label();
-            this.moisVoltLab = new System.Windows.Forms.Label();
             this.moisLab = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.rssiLab = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -58,6 +58,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.progressBarRSSI = new System.Windows.Forms.ProgressBar();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -138,11 +139,9 @@
             this.groupBox1.Controls.Add(this.progressBar1);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.maxMoisLab);
             this.groupBox1.Controls.Add(this.minMoisLab);
-            this.groupBox1.Controls.Add(this.moisVoltLab);
             this.groupBox1.Controls.Add(this.moisLab);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.916231F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -151,16 +150,16 @@
             this.groupBox1.Size = new System.Drawing.Size(277, 213);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Values";
+            this.groupBox1.Text = "Sensor1";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // progressBar1
             // 
             this.progressBar1.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.progressBar1.Location = new System.Drawing.Point(0, 201);
+            this.progressBar1.Location = new System.Drawing.Point(0, 195);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.RightToLeftLayout = true;
-            this.progressBar1.Size = new System.Drawing.Size(277, 16);
+            this.progressBar1.Size = new System.Drawing.Size(277, 22);
             this.progressBar1.Step = 1;
             this.progressBar1.TabIndex = 11;
             // 
@@ -168,7 +167,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(126, 172);
+            this.label4.Location = new System.Drawing.Point(126, 163);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(64, 35);
             this.label4.TabIndex = 0;
@@ -178,28 +177,19 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(12, 172);
+            this.label3.Location = new System.Drawing.Point(12, 163);
             this.label3.Name = "label3";
             this.label3.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.label3.Size = new System.Drawing.Size(60, 35);
             this.label3.TabIndex = 0;
             this.label3.Text = "min:";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(12, 129);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(52, 35);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "volt";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 66);
+            this.label1.Location = new System.Drawing.Point(12, 26);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(69, 35);
             this.label1.TabIndex = 0;
@@ -209,7 +199,7 @@
             // 
             this.maxMoisLab.AutoSize = true;
             this.maxMoisLab.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.maxMoisLab.Location = new System.Drawing.Point(193, 172);
+            this.maxMoisLab.Location = new System.Drawing.Point(193, 163);
             this.maxMoisLab.Name = "maxMoisLab";
             this.maxMoisLab.Size = new System.Drawing.Size(53, 35);
             this.maxMoisLab.TabIndex = 0;
@@ -219,33 +209,41 @@
             // 
             this.minMoisLab.AutoSize = true;
             this.minMoisLab.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.minMoisLab.Location = new System.Drawing.Point(75, 172);
+            this.minMoisLab.Location = new System.Drawing.Point(75, 163);
             this.minMoisLab.Name = "minMoisLab";
             this.minMoisLab.Size = new System.Drawing.Size(45, 35);
             this.minMoisLab.TabIndex = 0;
             this.minMoisLab.Text = "00";
             // 
-            // moisVoltLab
-            // 
-            this.moisVoltLab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.moisVoltLab.Font = new System.Drawing.Font("Segoe Print", 18.09424F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.moisVoltLab.Location = new System.Drawing.Point(87, 88);
-            this.moisVoltLab.Name = "moisVoltLab";
-            this.moisVoltLab.Size = new System.Drawing.Size(178, 80);
-            this.moisVoltLab.TabIndex = 0;
-            this.moisVoltLab.Text = "--";
-            this.moisVoltLab.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
             // moisLab
             // 
-            this.moisLab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.moisLab.Font = new System.Drawing.Font("Segoe Print", 18.09424F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.moisLab.Location = new System.Drawing.Point(87, 25);
+            this.moisLab.Font = new System.Drawing.Font("Segoe Print", 24.12566F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.moisLab.Location = new System.Drawing.Point(6, 33);
             this.moisLab.Name = "moisLab";
-            this.moisLab.Size = new System.Drawing.Size(178, 80);
+            this.moisLab.Size = new System.Drawing.Size(265, 119);
             this.moisLab.TabIndex = 0;
             this.moisLab.Text = "--";
             this.moisLab.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe Print", 7.162304F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(407, 238);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(47, 35);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "rssi";
+            // 
+            // rssiLab
+            // 
+            this.rssiLab.Font = new System.Drawing.Font("Segoe Print", 18.09424F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rssiLab.Location = new System.Drawing.Point(355, 226);
+            this.rssiLab.Name = "rssiLab";
+            this.rssiLab.Size = new System.Drawing.Size(233, 80);
+            this.rssiLab.TabIndex = 0;
+            this.rssiLab.Text = "--";
+            this.rssiLab.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // button1
             // 
@@ -336,6 +334,11 @@
             this.label6.TabIndex = 13;
             this.label6.Text = "get";
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 2000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::Soil_moisture_App.Properties.Resources.wifi_0;
@@ -348,18 +351,28 @@
             this.pictureBox1.Visible = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // progressBarRSSI
+            // 
+            this.progressBarRSSI.Location = new System.Drawing.Point(396, 304);
+            this.progressBarRSSI.Name = "progressBarRSSI";
+            this.progressBarRSSI.Size = new System.Drawing.Size(187, 10);
+            this.progressBarRSSI.TabIndex = 16;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1024, 503);
+            this.Controls.Add(this.progressBarRSSI);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
+            this.Controls.Add(this.rssiLab);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -376,6 +389,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Soil moisture App";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -398,7 +412,7 @@
         private System.Windows.Forms.Label moisLab;
         private System.Windows.Forms.Label maxMoisLab;
         private System.Windows.Forms.Label minMoisLab;
-        private System.Windows.Forms.Label moisVoltLab;
+        private System.Windows.Forms.Label rssiLab;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -415,6 +429,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ProgressBar progressBarRSSI;
     }
 }
 

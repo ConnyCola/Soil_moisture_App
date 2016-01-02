@@ -29,6 +29,7 @@ namespace Soil_moisture_App
         CMD_ERROR = (byte)'Z'
     }
 
+
     public struct cmdStruct
     {
         public byte cmd;
@@ -43,10 +44,19 @@ namespace Soil_moisture_App
 
         public volatile bool _backgroundPause = true;
 
-        public string[] cmdArray = {
-            "CMD 1",
-            "CMD 2",
-            "..."
+        public string[] CMD_array = {
+            "MOIS",
+            "VOLT",
+            "MIN ",
+            "MAX ",
+            "CALI",
+            "DRY ",
+            "WET ",
+            "FIN ",
+            "TEST",
+            "VERS",
+            "RSSI",
+            "ERROR"
         };
 
         public struct cmdStruct
@@ -65,7 +75,8 @@ namespace Soil_moisture_App
             CaliEnd
         };
 
-        int initFlag = 0;
+        volatile int initFlag = 0;
+        volatile bool wireless_Flag = false;
 
         public Thread bgThread = null;
 
@@ -82,16 +93,11 @@ namespace Soil_moisture_App
                 comPort_comboBox.Text = "COM12";
 
             moisLab.Text = "--%";
-            moisVoltLab.Text = "--V";
+            rssiLab.Text = "--";
 
             mainThread = SynchronizationContext.Current;
             if (mainThread == null) mainThread = new SynchronizationContext();
 
-        }
-
-        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            disconBTN_Click(null, null);
         }
 
 
@@ -124,18 +130,29 @@ namespace Soil_moisture_App
 
         public void send_command(byte cmd, byte val1, byte val2)
         {
-            byte[] b = new byte[3];
-            b[0] = cmd;
-            b[1] = val1;
-            b[2] = val2;
-            //sport.Write(b, 0, 3);
+            byte[] b = new byte[4];
+            //TODO: change to Node ID
 
-            //send only 1 char!
-            sport.Write(b, 0, 1);
+            b[0] = (byte)'1';
+            b[1] = (byte)'0';
+            b[2] = cmd;
+            b[3] = 0x0A; // '\n'
+
+            if (wireless_Flag == true)
+            {
+                //send 4 chars!
+                sport.Write(b, 0, 4);
+            }
+            else
+            {
+                //send only 1 char!
+                sport.Write(b, 2, 1);
+            }
+            
 
             mainThread.Send((object state) =>
             {
-                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "cmd: " + Convert.ToChar(cmd) + "  val1: " + val1.ToString() + "  val2: " + val2.ToString() + "\n");
+                //txtReceiveBox.AppendText("[" + get_dtn() + "] " + "cmd: " + Convert.ToChar(cmd) + "  val1: " + val1.ToString() + "  val2: " + val2.ToString() + "\n");
             }, null);
         }
 
@@ -203,27 +220,44 @@ namespace Soil_moisture_App
             mainThread.Send((object state) =>
             {
                 processReceivedCmd(cmdBack);
-                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Received: cmd: " + Convert.ToChar(cmdBack.cmd) + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
+                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + CMD_array[Convert.ToByte(cmdBack.cmd) - 'A'] + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
             }, null);
         }
 
         private cmdStruct decodeReceivedCmd(string str)
         {
             // Protocoll
-            // |  CMD  |  val1 |  val2 |  \n  |
-            // |  byte |  byte |  byte | byte |
-            // 
+            //   | ID | CMD | val1 |val2 | \n |
+            //   | 2B | 1B  |  4B  | 4B  | 1B |
+            //   9    11    12     16     20
+            //   0    2     3      7      11
+
             cmdStruct cmdBack = new cmdStruct();
 
             byte[] bytes = new byte[str.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
 
-            cmdBack.cmd = bytes[0];
-            if (str.Length >= 6)
-            cmdBack.val1 = Int16.Parse( str.Substring(1, 4));
-            if(str.Length >=10)
-                cmdBack.val2 = Int16.Parse( str.Substring(6, 4));
-            return cmdBack;
+            if (wireless_Flag == true && bytes[0] != (byte)CMDs.CMD_VERS)
+            {
+                int node_ID = Int16.Parse(str.Substring(0, 2));
+                cmdBack.cmd = bytes[2 * sizeof(char)];
+                if (str.Length >= 7)
+                    cmdBack.val1 = Int16.Parse(str.Substring(3, 4));
+                //TODO: length is somehow 11 but no conntent
+                if (str.Length >= 11)
+                    cmdBack.val2 = Int16.Parse(str.Substring(7, 4));
+                return cmdBack;
+            }
+            else
+            {
+                cmdBack.cmd = bytes[0];
+                if (str.Length >= 5)
+                    cmdBack.val1 = Int16.Parse(str.Substring(1, 4));
+                if (str.Length >= 9)
+                    cmdBack.val2 = Int16.Parse(str.Substring(5, 4));
+                return cmdBack;
+            }
+            
         }
 
         private void processReceivedCmd(cmdStruct c)
@@ -237,7 +271,6 @@ namespace Soil_moisture_App
                     progressBar1.Value = c.val1;
                     break;
                 case (byte)CMDs.CMD_VOLT:
-                    moisVoltLab.Text = c.val1.ToString();
                     break;
                 case (byte)CMDs.CMD_MIN:
                     minMoisLab.Text = c.val1.ToString();
@@ -278,22 +311,26 @@ namespace Soil_moisture_App
                      */
                 case(byte)CMDs.CMD_VERS:
                     initFlag = 1;
-                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "SoilMoisture Sensor" + "\n");
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Software VERSION : " + c.val1.ToString() + "\n");
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "         BUILT   : " + c.val2.ToString() + "\n");
 
                     if (c.val2 >= 1000)
                     {  //Veriosn with Wireless if built no. > 1000
                         pictureBox1.Visible = true;
+                        wireless_Flag = true;
                     }
-                    pictureBox1.Visible = true;
 
 
                     break;
                 case(byte)CMDs.CMD_RSSI:
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "received RSSI :" + c.val1.ToString() +"\n");
-                    moisVoltLab.Text = c.val1.ToString();
-                    moisVoltLab.Show();
+                    rssiLab.Text = "-" + c.val1.ToString();
+                    rssiLab.Show();
+                    progressBarRSSI.Minimum = 0;
+                    progressBarRSSI.Maximum = 40;
+                    if((c.val1 <= 120) && (c.val1 >= 80))
+                        progressBarRSSI.Value = 120 - c.val1;
+
                     if (c.val1 <= 94)
                         pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi3;
                     else if(c.val1 <= 105) 
@@ -302,6 +339,9 @@ namespace Soil_moisture_App
                         pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_1;
                     else
                         pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_0;
+                    //start timout timer
+                    timer1.Stop();
+                    timer1.Start();
                     break;
                 default:
                     break;
@@ -321,13 +361,13 @@ namespace Soil_moisture_App
             
             serialport_connect(port, baudrate, parity, databits, stopbits);
 
-
-
             //check the Version to check for right Com Port
             int tout = 20;
             initFlag = 0;
             send_command((byte)CMDs.CMD_VERS, 0, 0);
-
+            Thread.Sleep(300);
+            //send a second time in case of a wirless communication
+            send_command((byte)CMDs.CMD_VERS, 0, 0);
 
 
             Thread.Sleep(300);
@@ -335,11 +375,12 @@ namespace Soil_moisture_App
             Thread.Sleep(300);
             send_command((byte)CMDs.CMD_MAX, 0, 0);
             Thread.Sleep(300);
+            send_command((byte)CMDs.CMD_VERS, 0, 0);
+            Thread.Sleep(300);
 
             send_command((byte)CMDs.CMD_MOIS, 0, 0);
             Thread.Sleep(300);
             //Thread.Sleep(1000);
-
             while (initFlag != 1)
             {
                 Thread.Sleep(100);
@@ -367,18 +408,24 @@ namespace Soil_moisture_App
         private void disconBTN_Click(object sender, EventArgs e)
         {
             _backgroundPause = true;
-            bgThread.Abort();
+
+            if (bgThread.IsAlive == true)
+                bgThread.Abort();
 
             Thread.Sleep(500);
 
             if (sport.IsOpen)
             {
+                while (sport.BytesToRead != 0 && sport.BytesToRead != 0) ;
                 sport.Close();
+
                 disconBTN.Enabled = false;
                 caliBTN.Enabled = false;
                 conBTN.Enabled = true;
                 txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Disconnected\n");
             }
+            wireless_Flag = false;
+            pictureBox1.Visible = false;
         }
 
         private void caliBTN_Click(object sender, EventArgs e)
@@ -391,8 +438,16 @@ namespace Soil_moisture_App
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //_backgroundPause = true;
-            send_command((byte)CMDs.CMD_TEST, 0, 0);
+            Button btn = new Button();
+            btn.Location = new System.Drawing.Point(100, 100);
+            btn.Name = "dyn_BTN";
+            btn.Size = new System.Drawing.Size(193, 61);
+            btn.TabIndex = 100;
+            btn.Text = "dyn_BTN";
+            btn.UseVisualStyleBackColor = true;
+            //btn.Click += new System.EventHandler(this.dyn_BTN_Click);
+            this.Controls.Add(btn);
+            this.Refresh();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -408,11 +463,13 @@ namespace Soil_moisture_App
                 while (!_backgroundPause)
                 {
                     Thread.Sleep(250);
+                    runs++;
                     mainThread.Send((object state) =>
                     {
-                        txtReceiveBox.AppendText("[" + get_dtn() + "] " + "background thread: working... " + runs++ + "\n");
+                        //txtReceiveBox.AppendText("[" + get_dtn() + "] " + "background thread: working... " + runs + "\n");
+                    
                     }, null);
-                    if(runs%5 == 0)
+                    if ((runs % 5 == 0) && (wireless_Flag == true))
                         send_command((byte)CMDs.CMD_RSSI, 1, 0);
                     else
                         send_command((byte)CMDs.CMD_MOIS, 1, 0);
@@ -485,9 +542,14 @@ namespace Soil_moisture_App
 
         }
 
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            disconBTN_Click(null, null);
+        }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_err;
+        }
     }
 }
-
-
-

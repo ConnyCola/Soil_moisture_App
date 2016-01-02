@@ -143,6 +143,16 @@ namespace Soil_moisture_App.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap wifi_err {
+            get {
+                object obj = ResourceManager.GetObject("wifi_err", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap wifi3 {
             get {
                 object obj = ResourceManager.GetObject("wifi3", resourceCulture);
