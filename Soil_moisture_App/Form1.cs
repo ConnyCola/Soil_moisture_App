@@ -91,6 +91,12 @@ namespace Soil_moisture_App
             //debug code
             if (comPort_comboBox.Items.Contains("COM12"))
                 comPort_comboBox.Text = "COM12";
+            else
+            { if (comPort_comboBox.Items.Count != 0)
+                    comPort_comboBox.SelectedIndex = 0;
+            }
+
+            
 
             moisLab.Text = "--%";
             rssiLab.Text = "--";
@@ -217,10 +223,17 @@ namespace Soil_moisture_App
             String str = sport.ReadLine();
 
             cmdStruct cmdBack = decodeReceivedCmd(str);
+            
             mainThread.Send((object state) =>
             {
-                processReceivedCmd(cmdBack);
-                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + CMD_array[Convert.ToByte(cmdBack.cmd) - 'A'] + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
+                if (processReceivedCmd(cmdBack))
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + CMD_array[Convert.ToByte(cmdBack.cmd) - 'A'] + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
+                    //if(cmdBack.cmd == (byte)CMDs.CMD_RSSI)
+                      //  txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
+
+                else
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
+
             }, null);
         }
 
@@ -260,8 +273,9 @@ namespace Soil_moisture_App
             
         }
 
-        private void processReceivedCmd(cmdStruct c)
+        private bool processReceivedCmd(cmdStruct c)
         {
+            bool back = true;
             if (txtReceiveBox.TextLength >= 20000)
                 txtReceiveBox.Text =  txtReceiveBox.Text.Substring(17000, 3000);
             switch (c.cmd)
@@ -344,8 +358,10 @@ namespace Soil_moisture_App
                     timer1.Start();
                     break;
                 default:
+                    back = false;
                     break;
             }
+            return back;
         }
 
 
@@ -409,21 +425,25 @@ namespace Soil_moisture_App
         {
             _backgroundPause = true;
 
-            if (bgThread.IsAlive == true)
+            if (bgThread != null)
                 bgThread.Abort();
 
             Thread.Sleep(500);
 
-            if (sport.IsOpen)
+            if (sport != null)
             {
-                while (sport.BytesToRead != 0 && sport.BytesToRead != 0) ;
-                sport.Close();
+                if (sport.IsOpen)
+                {
+                    while (sport.BytesToRead != 0 && sport.BytesToRead != 0) ;
+                    sport.Close();
 
-                disconBTN.Enabled = false;
-                caliBTN.Enabled = false;
-                conBTN.Enabled = true;
-                txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Disconnected\n");
+                    disconBTN.Enabled = false;
+                    caliBTN.Enabled = false;
+                    conBTN.Enabled = true;
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Disconnected\n");
+                }
             }
+
             wireless_Flag = false;
             pictureBox1.Visible = false;
         }
@@ -469,8 +489,10 @@ namespace Soil_moisture_App
                         //txtReceiveBox.AppendText("[" + get_dtn() + "] " + "background thread: working... " + runs + "\n");
                     
                     }, null);
-                    if ((runs % 5 == 0) && (wireless_Flag == true))
+                    if ((runs % 5 == 0) && (wireless_Flag == true)){
                         send_command((byte)CMDs.CMD_RSSI, 1, 0);
+                        runs = 0;
+                    }
                     else
                         send_command((byte)CMDs.CMD_MOIS, 1, 0);
                     //_backgroundPause = true;
