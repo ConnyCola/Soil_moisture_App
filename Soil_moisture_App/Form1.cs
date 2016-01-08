@@ -333,10 +333,13 @@ namespace Soil_moisture_App
                 case(byte)CMDs.CMD_VERS:
                     initFlag = 1;
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Software VERSION : " + c.val1.ToString() + "\n");
-                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "         BUILT   : " + c.val2.ToString() + "\n");
+                    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "         BUILD   : " + c.val2.ToString() + "\n");
+
+                    versionLab.Text = "v" + Convert.ToString(c.val1/100) + "." + Convert.ToString(c.val1%100);
+                    versionLab.Text += "  build:" + Convert.ToString(c.val2);
 
                     if (c.val2 >= 1000)
-                    {  //Veriosn with Wireless if built no. > 1000
+                    {  //Veriosn with Wireless if build no. > 1000
                         pictureBox1.Visible = true;
                         wireless_Flag = true;
                     }

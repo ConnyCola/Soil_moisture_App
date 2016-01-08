@@ -61,6 +61,7 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.versionLab = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -377,11 +378,21 @@
             this.pictureBox1.Visible = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // versionLab
+            // 
+            this.versionLab.Location = new System.Drawing.Point(817, 468);
+            this.versionLab.Name = "versionLab";
+            this.versionLab.Size = new System.Drawing.Size(193, 23);
+            this.versionLab.TabIndex = 17;
+            this.versionLab.Text = "Version";
+            this.versionLab.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1024, 503);
+            this.Controls.Add(this.versionLab);
             this.Controls.Add(this.progressBarRSSI);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label6);
@@ -452,6 +463,7 @@
         private System.Windows.Forms.ProgressBar progressBarRSSI;
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Label versionLab;
     }
 }
 
