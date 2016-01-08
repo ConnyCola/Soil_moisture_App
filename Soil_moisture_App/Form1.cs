@@ -229,7 +229,7 @@ namespace Soil_moisture_App
                 if (processReceivedCmd(cmdBack))
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + CMD_array[Convert.ToByte(cmdBack.cmd) - 'A'] + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
                     //if(cmdBack.cmd == (byte)CMDs.CMD_RSSI)
-                      //  txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
+                    //    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
 
                 else
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
@@ -283,6 +283,13 @@ namespace Soil_moisture_App
                 case (byte)CMDs.CMD_MOIS:
                     moisLab.Text = c.val1.ToString() + "%";
                     progressBar1.Value = c.val1;
+
+                    // Timer for moist sensing / sensor connected?
+                    pictureBox2.Visible = false;
+                    timer2.Stop();
+                    timer2.Start();
+                    
+
                     break;
                 case (byte)CMDs.CMD_VOLT:
                     break;
@@ -353,6 +360,7 @@ namespace Soil_moisture_App
                         pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_1;
                     else
                         pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_0;
+                    
                     //start timout timer
                     timer1.Stop();
                     timer1.Start();
@@ -541,6 +549,8 @@ namespace Soil_moisture_App
         {
             Form frm = sender as Form;
             frm.Width = 161;
+            pictureBox1.Visible = false;
+            pictureBox2.Visible = false;
         }
 
         private void Form1_FormClosing(object sender, FormClosedEventHandler e)
@@ -572,6 +582,16 @@ namespace Soil_moisture_App
         private void timer1_Tick(object sender, EventArgs e)
         {
             pictureBox1.Image = Soil_moisture_App.Properties.Resources.wifi_err;
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            if (_backgroundPause == false)
+            {
+                pictureBox2.Visible = true;
+                moisLab.Text = "";
+            }
+
         }
     }
 }

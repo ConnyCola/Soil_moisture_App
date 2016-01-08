@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="Resources\warning.png" />
     <None Include="Resources\wifi_err.png" />
     <None Include="Resources\wifi3.png" />
     <None Include="Resources\wifi_2.png" />
