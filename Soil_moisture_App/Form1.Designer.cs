@@ -38,6 +38,7 @@
             this.txtReceiveBox = new System.Windows.Forms.TextBox();
             this.txtDataSendBox = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -59,12 +60,16 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.progressBarRSSI = new System.Windows.Forms.ProgressBar();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.versionLab = new System.Windows.Forms.Label();
+            this.LogFile_btn = new System.Windows.Forms.Button();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // conBTN
@@ -150,13 +155,23 @@
             this.groupBox1.Controls.Add(this.moisLab);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.916231F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(12, 278);
+            this.groupBox1.Location = new System.Drawing.Point(12, 361);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(277, 213);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sensor1";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::Soil_moisture_App.Properties.Resources.warning;
+            this.pictureBox2.Location = new System.Drawing.Point(19, 68);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(84, 70);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox2.TabIndex = 17;
+            this.pictureBox2.TabStop = false;
             // 
             // progressBar1
             // 
@@ -313,7 +328,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(12, 227);
+            this.checkBox1.Location = new System.Drawing.Point(12, 310);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(159, 30);
             this.checkBox1.TabIndex = 12;
@@ -356,20 +371,10 @@
             this.timer2.Interval = 1000;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = global::Soil_moisture_App.Properties.Resources.warning;
-            this.pictureBox2.Location = new System.Drawing.Point(19, 68);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(84, 70);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 17;
-            this.pictureBox2.TabStop = false;
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::Soil_moisture_App.Properties.Resources.wifi_0;
-            this.pictureBox1.Location = new System.Drawing.Point(220, 226);
+            this.pictureBox1.Location = new System.Drawing.Point(220, 309);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(65, 60);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -387,11 +392,45 @@
             this.versionLab.Text = "Version";
             this.versionLab.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // LogFile_btn
+            // 
+            this.LogFile_btn.Location = new System.Drawing.Point(13, 228);
+            this.LogFile_btn.Name = "LogFile_btn";
+            this.LogFile_btn.Size = new System.Drawing.Size(276, 59);
+            this.LogFile_btn.TabIndex = 18;
+            this.LogFile_btn.Text = "LogeFile Path";
+            this.LogFile_btn.UseVisualStyleBackColor = true;
+            this.LogFile_btn.Click += new System.EventHandler(this.LogFile_btn_Click);
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(347, 539);
+            this.trackBar1.Maximum = 600;
+            this.trackBar1.Minimum = 1;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(565, 90);
+            this.trackBar1.TabIndex = 19;
+            this.trackBar1.Value = 1;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(939, 539);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(54, 26);
+            this.label7.TabIndex = 20;
+            this.label7.Text = "time";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1024, 503);
+            this.ClientSize = new System.Drawing.Size(1024, 586);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.trackBar1);
+            this.Controls.Add(this.LogFile_btn);
             this.Controls.Add(this.versionLab);
             this.Controls.Add(this.progressBarRSSI);
             this.Controls.Add(this.pictureBox1);
@@ -425,6 +464,7 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -464,6 +504,10 @@
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label versionLab;
+        private System.Windows.Forms.Button LogFile_btn;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.Label label7;
     }
 }
 

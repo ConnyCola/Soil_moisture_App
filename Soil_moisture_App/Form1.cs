@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.IO;
+
 
 namespace Soil_moisture_App
 {
@@ -75,8 +77,13 @@ namespace Soil_moisture_App
             CaliEnd
         };
 
+        public StringBuilder csv;
         volatile int initFlag = 0;
         volatile bool wireless_Flag = false;
+
+        string filePath;
+        bool logToFile_Flag = false;
+        int loop_delay = 250;
 
         public Thread bgThread = null;
 
@@ -96,7 +103,7 @@ namespace Soil_moisture_App
                     comPort_comboBox.SelectedIndex = 0;
             }
 
-            
+            csv = new StringBuilder();
 
             moisLab.Text = "--%";
             rssiLab.Text = "--";
@@ -169,6 +176,18 @@ namespace Soil_moisture_App
             return dt.ToLongTimeString();
         }
 
+        public String get_dtn_time()
+        {
+            DateTime dt = DateTime.Now;
+            //return dt.ToShortTimeString();
+            return dt.ToLongTimeString();
+        }
+
+        public String get_dtn_date()
+        {
+            DateTime dt = DateTime.Now;
+            return dt.ToShortDateString();
+        }
         public void CaliFormCallback(byte m)
         {
             button1.Text = m.ToString();
@@ -227,10 +246,14 @@ namespace Soil_moisture_App
             mainThread.Send((object state) =>
             {
                 if (processReceivedCmd(cmdBack))
+                {
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + CMD_array[Convert.ToByte(cmdBack.cmd) - 'A'] + "  val1: " + cmdBack.val1.ToString() + "  val2: " + cmdBack.val2.ToString() + "\n");
                     //if(cmdBack.cmd == (byte)CMDs.CMD_RSSI)
                     //    txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
 
+                    if (logToFile_Flag == true)
+                        saveToCSV(cmdBack);
+                }
                 else
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "rec: cmd: " + str.ToString() + "\n");
 
@@ -406,8 +429,11 @@ namespace Soil_moisture_App
             Thread.Sleep(300);
 
             send_command((byte)CMDs.CMD_MOIS, 0, 0);
+            timer2.Start();
+
             Thread.Sleep(300);
             //Thread.Sleep(1000);
+
             while (initFlag != 1)
             {
                 Thread.Sleep(100);
@@ -493,7 +519,9 @@ namespace Soil_moisture_App
             {
                 while (!_backgroundPause)
                 {
-                    Thread.Sleep(250);
+                    for (int i = 0; i < loop_delay;i++ )
+                        Thread.Sleep(1000);
+
                     runs++;
                     mainThread.Send((object state) =>
                     {
@@ -595,6 +623,42 @@ namespace Soil_moisture_App
                 moisLab.Text = "";
             }
 
+        }
+
+        private void LogFile_btn_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.FileName = "log.csv";
+            DialogResult result = saveFileDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                string file = saveFileDialog1.FileName;
+                filePath = file;
+                LogFile_btn.Text = file;
+                logToFile_Flag = true;
+            }
+        }
+
+        private void saveToCSV(cmdStruct cmd)
+        {
+            String newLine = string.Format("{0};{1};{2};{3}", get_dtn_date() + " " + get_dtn_time(), CMD_array[Convert.ToByte(cmd.cmd) - 'A'], cmd.val1.ToString(), cmd.val2.ToString());
+            csv.AppendLine(newLine);
+
+            if (csv.Length > 2000)
+            {
+                File.AppendAllText(filePath, csv.ToString());
+                csv.Remove(0, csv.Length);
+            }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            loop_delay = trackBar1.Value;
+            label7.Text = trackBar1.Value.ToString() + "sec";
         }
     }
 }
