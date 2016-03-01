@@ -83,7 +83,7 @@ namespace Soil_moisture_App
 
         string filePath;
         bool logToFile_Flag = false;
-        int loop_delay = 250;
+        int loop_delay = 1;
 
         public Thread bgThread = null;
 
@@ -125,6 +125,7 @@ namespace Soil_moisture_App
                     sport.Open();
                     disconBTN.Enabled = true;
                     conBTN.Enabled = false;
+                    LogFile_btn.Enabled = false;
                     caliBTN.Enabled = true;
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Connected\n");
                     sport.DataReceived += new SerialDataReceivedEventHandler(sport_DataReceived);
@@ -471,12 +472,15 @@ namespace Soil_moisture_App
             {
                 if (sport.IsOpen)
                 {
+                    if (logToFile_Flag)
+                        saveToCSV_last();
                     while (sport.BytesToRead != 0 && sport.BytesToRead != 0) ;
                     sport.Close();
 
                     disconBTN.Enabled = false;
                     caliBTN.Enabled = false;
                     conBTN.Enabled = true;
+                    LogFile_btn.Enabled = true;
                     txtReceiveBox.AppendText("[" + get_dtn() + "] " + "Disconnected\n");
                 }
             }
@@ -582,6 +586,9 @@ namespace Soil_moisture_App
             frm.Width = 161;
             pictureBox1.Visible = false;
             pictureBox2.Visible = false;
+
+            loop_delay_trackBar.Value = loop_delay;
+            loop_delay_lab.Text = loop_delay + "sec";
         }
 
         private void Form1_FormClosing(object sender, FormClosedEventHandler e)
@@ -635,12 +642,21 @@ namespace Soil_moisture_App
                 filePath = file;
                 LogFile_btn.Text = file;
                 logToFile_Flag = true;
+
+                String newLine = "Date/Time; Command; value 1; value 2\n";
+                csv.Remove(0, csv.Length);
+                csv.AppendLine(newLine);
+                
+                File.WriteAllText(filePath, csv.ToString());
+                csv.Remove(0, csv.Length);
             }
         }
 
         private void saveToCSV(cmdStruct cmd)
         {
-            String newLine = string.Format("{0};{1};{2};{3}", get_dtn_date() + " " + get_dtn_time(), CMD_array[Convert.ToByte(cmd.cmd) - 'A'], cmd.val1.ToString(), cmd.val2.ToString());
+            String newLine = string.Format("{0};{1};{2};{3}", get_dtn_date() + " " + get_dtn_time(), 
+                CMD_array[Convert.ToByte(cmd.cmd) - 'A'], cmd.val1.ToString(), cmd.val2.ToString());
+
             csv.AppendLine(newLine);
 
             if (csv.Length > 2000)
@@ -650,6 +666,12 @@ namespace Soil_moisture_App
             }
         }
 
+        private void saveToCSV_last()
+        {
+            File.AppendAllText(filePath, csv.ToString());
+            csv.Remove(0, csv.Length);
+        }
+
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
 
@@ -657,8 +679,8 @@ namespace Soil_moisture_App
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
-            loop_delay = trackBar1.Value;
-            label7.Text = trackBar1.Value.ToString() + "sec";
+            loop_delay = loop_delay_trackBar.Value;
+            loop_delay_lab.Text = loop_delay_trackBar.Value.ToString() + "sec";
         }
     }
 }

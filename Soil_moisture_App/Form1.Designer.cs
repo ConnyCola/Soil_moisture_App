@@ -64,12 +64,12 @@
             this.versionLab = new System.Windows.Forms.Label();
             this.LogFile_btn = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.label7 = new System.Windows.Forms.Label();
+            this.loop_delay_trackBar = new System.Windows.Forms.TrackBar();
+            this.loop_delay_lab = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.loop_delay_trackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // conBTN
@@ -398,38 +398,38 @@
             this.LogFile_btn.Name = "LogFile_btn";
             this.LogFile_btn.Size = new System.Drawing.Size(276, 59);
             this.LogFile_btn.TabIndex = 18;
-            this.LogFile_btn.Text = "LogeFile Path";
+            this.LogFile_btn.Text = "LogFile Path";
             this.LogFile_btn.UseVisualStyleBackColor = true;
             this.LogFile_btn.Click += new System.EventHandler(this.LogFile_btn_Click);
             // 
-            // trackBar1
+            // loop_delay_trackBar
             // 
-            this.trackBar1.Location = new System.Drawing.Point(347, 539);
-            this.trackBar1.Maximum = 600;
-            this.trackBar1.Minimum = 1;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(565, 90);
-            this.trackBar1.TabIndex = 19;
-            this.trackBar1.Value = 1;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
-            this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+            this.loop_delay_trackBar.Location = new System.Drawing.Point(347, 539);
+            this.loop_delay_trackBar.Maximum = 600;
+            this.loop_delay_trackBar.Minimum = 1;
+            this.loop_delay_trackBar.Name = "loop_delay_trackBar";
+            this.loop_delay_trackBar.Size = new System.Drawing.Size(565, 90);
+            this.loop_delay_trackBar.TabIndex = 19;
+            this.loop_delay_trackBar.Value = 1;
+            this.loop_delay_trackBar.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            this.loop_delay_trackBar.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             // 
-            // label7
+            // loop_delay_lab
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(939, 539);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(54, 26);
-            this.label7.TabIndex = 20;
-            this.label7.Text = "time";
+            this.loop_delay_lab.AutoSize = true;
+            this.loop_delay_lab.Location = new System.Drawing.Point(939, 539);
+            this.loop_delay_lab.Name = "loop_delay_lab";
+            this.loop_delay_lab.Size = new System.Drawing.Size(54, 26);
+            this.loop_delay_lab.TabIndex = 20;
+            this.loop_delay_lab.Text = "time";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1024, 586);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.trackBar1);
+            this.Controls.Add(this.loop_delay_lab);
+            this.Controls.Add(this.loop_delay_trackBar);
             this.Controls.Add(this.LogFile_btn);
             this.Controls.Add(this.versionLab);
             this.Controls.Add(this.progressBarRSSI);
@@ -464,7 +464,7 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.loop_delay_trackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -506,8 +506,8 @@
         private System.Windows.Forms.Label versionLab;
         private System.Windows.Forms.Button LogFile_btn;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.TrackBar trackBar1;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TrackBar loop_delay_trackBar;
+        private System.Windows.Forms.Label loop_delay_lab;
     }
 }
 
